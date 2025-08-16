@@ -1,26 +1,29 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef, useCallback } from 'react'
 import { motion } from 'framer-motion'
-import { marked } from 'marked'
+import ReactMarkdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
+import remarkMath from 'remark-math'
+import rehypeRaw from 'rehype-raw'
+import rehypeKatex from 'rehype-katex'
+import mermaid from 'mermaid'
+import {Prism as SyntaxHighlighter} from 'react-syntax-highlighter'
+import { dracula } from 'react-syntax-highlighter/dist/esm/styles/prism'
 import jsPDF from 'jspdf'
 import { saveAs } from 'file-saver'
-import { 
-  Download, 
-  Copy, 
-  Eye, 
-  Code, 
-  FileText, 
+import {
+  Download,
+  Copy,
+  Eye,
+  Code,
+  FileText,
   Maximize2,
   RefreshCw
 } from 'lucide-react'
 import toast from 'react-hot-toast'
+import 'katex/dist/katex.min.css'
 
-// Configure marked options
-marked.setOptions({
-  breaks: true,
-  gfm: true,
-  headerIds: true,
-  mangle: false
-})
+// Initialize mermaid
+mermaid.initialize({ startOnLoad: true, theme: 'default' })
 
 const sampleMarkdown = `# Welcome to Markdown Converter
 
@@ -32,7 +35,9 @@ This is a **powerful** markdown converter with live preview and export capabilit
 - ✅ HTML export
 - ✅ PDF generation
 - ✅ Syntax highlighting
-- ✅ GitHub Flavored Markdown
+- ✅ GitHub Flavored Markdown (tables, task lists, strikethrough)
+- ✅ Math ($$E = mc^2$$)
+- ✅ Mermaid diagrams
 
 ### Code Example
 
@@ -40,42 +45,97 @@ This is a **powerful** markdown converter with live preview and export capabilit
 function greet(name) {
   return \`Hello, \${name}!\`;
 }
-
 console.log(greet('Developer'));
 \`\`\`
 
-### Lists and Links
+### Math Example
 
-1. First item
-2. Second item
-3. [Link to Google](https://google.com)
+Inline: $E = mc^2$
+
+Block:
+$$
+a^2 + b^2 = c^2
+$$
+
+### Mermaid Diagram
+
+\`\`\`mermaid
+graph TD
+  A[Start] --> B{Decision}
+  B -->|Yes| C[Result 1]
+  B -->|No| D[Result 2]
+\`\`\`
+
+### Lists, Links, Tables
+
+- [x] Completed task
+- [ ] Incomplete task
+
+| Feature     | Status |
+|-------------|--------|
+| Preview     | ✅     |
+| Export      | ✅     |
+| PDF         | ✅     |
 
 > This is a blockquote with **bold** text and *italic* text.
-
-| Feature | Status |
-|---------|--------|
-| Preview | ✅ |
-| Export | ✅ |
-| PDF | ✅ |
 `
+
+function MermaidRenderer({ code }) {
+  const ref = useRef()
+  
+  useEffect(() => {
+    if (ref.current) {
+      try {
+        const id = `mermaid-${Math.random().toString(36).substr(2, 9)}`
+        mermaid.render(id, code).then((result) => {
+          ref.current.innerHTML = result.svg
+        }).catch((error) => {
+          console.error('Mermaid rendering error:', error)
+          ref.current.textContent = 'Mermaid diagram error'
+        })
+      } catch (error) {
+        console.error('Mermaid error:', error)
+        ref.current.textContent = 'Mermaid diagram error'
+      }
+    }
+  }, [code])
+  
+  return <div ref={ref} />
+}
 
 export default function MarkdownConverter() {
   const [markdown, setMarkdown] = useState(sampleMarkdown)
-  const [html, setHtml] = useState('')
   const [activeTab, setActiveTab] = useState('preview')
   const [isFullscreen, setIsFullscreen] = useState(false)
+  const [html, setHtml] = useState('')
+  const markdownRef = useRef()
 
+  // Convert markdown to HTML string for export
   useEffect(() => {
-    const convertMarkdown = async () => {
-      try {
-        const htmlContent = await marked(markdown)
-        setHtml(htmlContent)
-      } catch (error) {
-        console.error('Markdown conversion error:', error)
-        toast.error('Error converting markdown')
-      }
-    }
-    convertMarkdown()
+    // For HTML export, we'll use a simple conversion
+    setHtml(`
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Converted Document</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.0/dist/katex.min.css">
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; max-width: 800px; margin: 0 auto; padding: 20px; }
+    code { background: #f4f4f4; padding: 2px 4px; border-radius: 3px; }
+    pre { background: #f4f4f4; padding: 15px; border-radius: 5px; overflow-x: auto; }
+    blockquote { border-left: 4px solid #ddd; margin: 0; padding-left: 20px; color: #666; }
+    table { border-collapse: collapse; width: 100%; }
+    th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+    th { background-color: #f2f2f2; }
+  </style>
+</head>
+<body>
+  ${markdownRef.current?.innerHTML || ''}
+</body>
+</html>
+    `)
   }, [markdown])
 
   const copyToClipboard = async (content, type) => {
@@ -88,74 +148,26 @@ export default function MarkdownConverter() {
   }
 
   const downloadHTML = () => {
-    const fullHTML = `<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Converted Document</title>
-    <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; max-width: 800px; margin: 0 auto; padding: 20px; }
-        code { background: #f4f4f4; padding: 2px 4px; border-radius: 3px; }
-        pre { background: #f4f4f4; padding: 15px; border-radius: 5px; overflow-x: auto; }
-        blockquote { border-left: 4px solid #ddd; margin: 0; padding-left: 20px; color: #666; }
-        table { border-collapse: collapse; width: 100%; }
-        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-        th { background-color: #f2f2f2; }
-    </style>
-</head>
-<body>
-    ${html}
-</body>
-</html>`
-    
-    const blob = new Blob([fullHTML], { type: 'text/html' })
+    const blob = new Blob([html], { type: 'text/html' })
     saveAs(blob, 'converted-document.html')
     toast.success('HTML file downloaded!')
   }
 
   const downloadPDF = () => {
     try {
-      const pdf = new jsPDF()
-      const lines = markdown.split('\n')
-      let yPosition = 20
-      
-      lines.forEach((line) => {
-        if (yPosition > 280) {
-          pdf.addPage()
-          yPosition = 20
-        }
-        
-        // Simple markdown to PDF conversion
-        if (line.startsWith('# ')) {
-          pdf.setFontSize(20)
-          pdf.setFont(undefined, 'bold')
-          pdf.text(line.substring(2), 20, yPosition)
-          yPosition += 15
-        } else if (line.startsWith('## ')) {
-          pdf.setFontSize(16)
-          pdf.setFont(undefined, 'bold')
-          pdf.text(line.substring(3), 20, yPosition)
-          yPosition += 12
-        } else if (line.startsWith('### ')) {
-          pdf.setFontSize(14)
-          pdf.setFont(undefined, 'bold')
-          pdf.text(line.substring(4), 20, yPosition)
-          yPosition += 10
-        } else if (line.trim()) {
-          pdf.setFontSize(12)
-          pdf.setFont(undefined, 'normal')
-          const cleanLine = line.replace(/\*\*(.*?)\*\*/g, '$1').replace(/\*(.*?)\*/g, '$1')
-          pdf.text(cleanLine, 20, yPosition)
-          yPosition += 8
-        } else {
-          yPosition += 5
-        }
-      })
-      
-      pdf.save('converted-document.pdf')
-      toast.success('PDF downloaded!')
+      const pdf = new jsPDF({ unit: 'pt', format: 'a4' })
+      if (markdownRef.current) {
+        pdf.html(markdownRef.current, {
+          callback: function (doc) {
+            doc.save('converted-document.pdf')
+            toast.success('PDF downloaded!')
+          },
+          margin: [20, 20, 20, 20],
+          html2canvas: { scale: 0.5 }
+        })
+      }
     } catch (error) {
+      console.error('PDF generation error:', error)
       toast.error('Error generating PDF')
     }
   }
@@ -177,34 +189,25 @@ export default function MarkdownConverter() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
       >
-        {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-slate-900 mb-4">Markdown Converter</h1>
           <p className="text-slate-600">
-            Convert Markdown to HTML and PDF with live preview. Supports GitHub Flavored Markdown.
+            Convert Markdown to HTML, PDF, diagrams, and math with live preview. Full GFM + extended features.
           </p>
         </div>
 
-        {/* Toolbar */}
         <div className="bg-white rounded-lg border border-slate-200 p-4 mb-6">
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div className="flex items-center gap-2">
-              <button
-                onClick={loadSample}
-                className="btn-secondary text-sm"
-              >
+              <button onClick={loadSample} className="btn-secondary text-sm">
                 <FileText className="h-4 w-4" />
                 Load Sample
               </button>
-              <button
-                onClick={clearContent}
-                className="btn-secondary text-sm"
-              >
+              <button onClick={clearContent} className="btn-secondary text-sm">
                 <RefreshCw className="h-4 w-4" />
                 Clear
               </button>
             </div>
-            
             <div className="flex items-center gap-2">
               <button
                 onClick={() => copyToClipboard(html, 'HTML')}
@@ -213,17 +216,11 @@ export default function MarkdownConverter() {
                 <Copy className="h-4 w-4" />
                 Copy HTML
               </button>
-              <button
-                onClick={downloadHTML}
-                className="btn-secondary text-sm"
-              >
+              <button onClick={downloadHTML} className="btn-secondary text-sm">
                 <Download className="h-4 w-4" />
                 HTML
               </button>
-              <button
-                onClick={downloadPDF}
-                className="btn-primary text-sm"
-              >
+              <button onClick={downloadPDF} className="btn-primary text-sm">
                 <Download className="h-4 w-4" />
                 PDF
               </button>
@@ -231,9 +228,7 @@ export default function MarkdownConverter() {
           </div>
         </div>
 
-        {/* Main Content */}
         <div className={`grid gap-6 ${isFullscreen ? 'fixed inset-0 z-50 bg-white p-6' : 'lg:grid-cols-2'}`}>
-          {/* Input Section */}
           <div className="bg-white rounded-lg border border-slate-200 overflow-hidden">
             <div className="border-b border-slate-200 p-4">
               <div className="flex items-center justify-between">
@@ -257,7 +252,6 @@ export default function MarkdownConverter() {
             />
           </div>
 
-          {/* Output Section */}
           <div className="bg-white rounded-lg border border-slate-200 overflow-hidden">
             <div className="border-b border-slate-200 p-4">
               <div className="flex items-center justify-between">
@@ -292,12 +286,42 @@ export default function MarkdownConverter() {
               </div>
             </div>
             
-            <div className="h-96 overflow-auto">
+            <div className="h-96 overflow-auto" ref={markdownRef}>
               {activeTab === 'preview' ? (
-                <div 
-                  className="p-4 prose prose-slate max-w-none"
-                  dangerouslySetInnerHTML={{ __html: html }}
-                />
+                <div className="p-4 prose prose-slate max-w-none">
+                  <ReactMarkdown
+                    remarkPlugins={[remarkGfm, remarkMath]}
+                    rehypePlugins={[rehypeRaw, rehypeKatex]}
+                    components={{
+                      code({node, inline, className, children, ...props}) {
+                        const match = /language-(\w+)/.exec(className || '')
+                        const isMermaid = match && match[1] === 'mermaid'
+                        
+                        if (isMermaid) {
+                          return <MermaidRenderer code={String(children).replace(/\n$/, '')} />
+                        }
+                        
+                        return !inline && match ? (
+                          <SyntaxHighlighter
+                            style={dracula}
+                            language={match[1]}
+                            PreTag="div"
+                            showLineNumbers
+                            {...props}
+                          >
+                            {String(children).replace(/\n$/, '')}
+                          </SyntaxHighlighter>
+                        ) : (
+                          <code className={className} {...props}>
+                            {children}
+                          </code>
+                        )
+                      }
+                    }}
+                  >
+                    {markdown}
+                  </ReactMarkdown>
+                </div>
               ) : (
                 <pre className="p-4 text-sm font-mono text-slate-700 whitespace-pre-wrap">
                   {html}
@@ -307,7 +331,6 @@ export default function MarkdownConverter() {
           </div>
         </div>
 
-        {/* Features */}
         <div className="mt-8 grid md:grid-cols-3 gap-6">
           <div className="bg-white rounded-lg border border-slate-200 p-6">
             <div className="flex items-center gap-3 mb-3">
@@ -338,10 +361,10 @@ export default function MarkdownConverter() {
               <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
                 <Code className="h-5 w-5 text-purple-600" />
               </div>
-              <h3 className="font-semibold text-slate-900">GitHub Flavored</h3>
+              <h3 className="font-semibold text-slate-900">Full Feature Support</h3>
             </div>
             <p className="text-sm text-slate-600">
-              Full support for GFM including tables and task lists
+              All GFM, math, code, diagrams, tables, emoji, images, footnotes, and more supported
             </p>
           </div>
         </div>
