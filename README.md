@@ -1,5 +1,7 @@
 # DevTools Hub - All-in-One Developer Utility Toolbox
 
+<img width="640" height="538" alt="image" src="https://github.com/user-attachments/assets/7846639d-69fd-4f54-acda-0c44d74bb192" />
+
 ## 🌟 Overview
 
 DevTools Hub is an open-source, all-in-one developer utility toolbox designed to streamline your workflow with essential tools for everyday development tasks. Built with modern web technologies, this application offers a collection of powerful utilities in a clean, intuitive interface.
@@ -33,8 +35,8 @@ DevTools Hub is an open-source, all-in-one developer utility toolbox designed to
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/lokeshvivek2511/dev-utility-toolbox.git
-   cd dev-utility-toolbox
+   git clone https://github.com/lokeshvivek2511/tools.git
+
    ```
 
 2. Install dependencies:
