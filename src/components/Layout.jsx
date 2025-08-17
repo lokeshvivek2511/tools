@@ -91,33 +91,15 @@ export default function Layout({ children }) {
 
               <div className="absolute bottom-6 left-6 right-6">
                 <div className="p-4 bg-slate-50 rounded-lg">
-                  <p className="text-sm text-slate-600 mb-3">
-                    Built with ❤️ for developers
-                  </p>
+                  
                   <div className="flex space-x-3">
                     <a
-                      href="https://github.com"
+                      href="https://github.com/lokeshvivek2511"
                       className="p-2 rounded-lg hover:bg-slate-200 transition-colors"
                       target="_blank"
                       rel="noopener noreferrer"
                     >
                       <Github className="h-5 w-5 text-slate-600" />
-                    </a>
-                    <a
-                      href="https://twitter.com"
-                      className="p-2 rounded-lg hover:bg-slate-200 transition-colors"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <Twitter className="h-5 w-5 text-slate-600" />
-                    </a>
-                    <a
-                      href="https://buymeacoffee.com"
-                      className="p-2 rounded-lg hover:bg-slate-200 transition-colors"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <Coffee className="h-5 w-5 text-slate-600" />
                     </a>
                   </div>
                 </div>
