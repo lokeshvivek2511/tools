@@ -11,7 +11,7 @@ import {
   Share2, 
   Home, 
   Github, 
-  Twitter, 
+  Mail,
   Coffee,
   FileText,
   GitBranch,
@@ -20,13 +20,13 @@ import {
 
 const navigation = [
   { name: 'Dashboard', href: '/', icon: Home },
-  { name: 'Markdown Converter', href: '/markdown', icon: Code2 },
-  { name: 'Color Palette', href: '/colors', icon: Palette },
-  { name: 'Image Tools', href: '/images', icon: Image },
-  { name: 'API Tester', href: '/api', icon: Zap },
   { name: 'Text Sharing', href: '/share', icon: Share2 },
   { name: 'Text Summarizer', href: '/summarizer', icon: FileText },
   { name: 'Diagram Generator', href: '/diagram', icon: GitBranch },
+  { name: 'API Tester', href: '/api', icon: Zap },
+  { name: 'Markdown Converter', href: '/markdown', icon: Code2 },
+  { name: 'Color Palette', href: '/colors', icon: Palette },
+  { name: 'Image Tools', href: '/images', icon: Image },
   { name: 'Icon Generator', href: '/icons', icon: Layers },
 ]
 
@@ -91,17 +91,24 @@ export default function Layout({ children }) {
 
               <div className="absolute bottom-6 left-6 right-6">
                 <div className="p-4 bg-slate-50 rounded-lg">
-                  
-                  <div className="flex space-x-3">
-                    <a
-                      href="https://github.com/lokeshvivek2511"
-                      className="p-2 rounded-lg hover:bg-slate-200 transition-colors"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <Github className="h-5 w-5 text-slate-600" />
-                    </a>
-                  </div>
+                 <div className="flex space-x-3">
+                <a
+                  href="https://github.com/lokeshvivek2511"
+                  className="p-2 rounded-lg hover:bg-slate-200 transition-colors"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <Github className="h-5 w-5 text-slate-600" />
+                </a>
+                <a
+                  href="mailto:lokeshvlw2004@gmail.com"
+                  className="p-2 rounded-lg hover:bg-slate-200 transition-colors"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <Email className="h-5 w-5 text-slate-600" />
+                </a>
+              </div>
                 </div>
               </div>
             </motion.div>
@@ -144,11 +151,11 @@ export default function Layout({ children }) {
           <div className="p-6 border-t border-slate-200">
             <div className="p-4 bg-slate-50 rounded-lg">
               <p className="text-sm text-slate-600 mb-3">
-                Built with ❤️ for developers
+                Connect with me😺
               </p>
               <div className="flex space-x-3">
                 <a
-                  href="https://github.com"
+                  href="https://github.com/lokeshvivek2511"
                   className="p-2 rounded-lg hover:bg-slate-200 transition-colors"
                   target="_blank"
                   rel="noopener noreferrer"
@@ -156,20 +163,12 @@ export default function Layout({ children }) {
                   <Github className="h-5 w-5 text-slate-600" />
                 </a>
                 <a
-                  href="https://twitter.com"
+                  href="mailto:lokeshvlw2004@gmail.com"
                   className="p-2 rounded-lg hover:bg-slate-200 transition-colors"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  <Twitter className="h-5 w-5 text-slate-600" />
-                </a>
-                <a
-                  href="https://buymeacoffee.com"
-                  className="p-2 rounded-lg hover:bg-slate-200 transition-colors"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <Coffee className="h-5 w-5 text-slate-600" />
+                  <Mail className="h-5 w-5 text-slate-600" />
                 </a>
               </div>
             </div>
