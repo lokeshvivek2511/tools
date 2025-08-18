@@ -340,7 +340,7 @@ export default function TextSummarizer() {
           </div>
 
           {/* Sample Texts */}
-          <div className="bg-white rounded-xl border border-slate-200 p-6">
+          {/* <div className="bg-white rounded-xl border border-slate-200 p-6">
             <h3 className="text-lg font-semibold text-slate-900 mb-4 flex items-center">
               <BookOpen className="h-5 w-5 mr-2 text-teal-600" />
               Sample Texts
@@ -359,7 +359,7 @@ export default function TextSummarizer() {
                 </button>
               ))}
             </div>
-          </div>
+          </div> */}
 
           {/* Features */}
           <div className="bg-gradient-to-r from-teal-50 to-blue-50 rounded-xl p-6">

@@ -145,7 +145,7 @@ export default function Dashboard() {
             <Link to={tool.href} className="block h-full">
               <div className="bg-white rounded-2xl border border-slate-200 p-6 hover:shadow-lg transition-all duration-300 hover:-translate-y-1 h-full">
                 <div className={`w-12 h-12 rounded-xl bg-gradient-to-r ${tool.color} flex items-center justify-center mb-4`}>
-                  <tool.icon className="h-6 w-6 text-white" />
+                  <tool.icon className="h-6 w-6 text-white hover:transition-all duration-300 " />
                 </div>
                 
                 <h3 className="text-lg font-semibold text-slate-900 mb-2">
@@ -167,9 +167,9 @@ export default function Dashboard() {
                   ))}
                 </div>
                 
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between hover:transition-all duration-300 hover:translate-x-2">
                   <span className="text-sm font-medium text-blue-600">Try it now</span>
-                  <ArrowRight className="h-4 w-4 text-blue-600" />
+                  <ArrowRight className="h-4 w-4 text-blue-600 " />
                 </div>
               </div>
             </Link>
