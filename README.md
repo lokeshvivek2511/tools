@@ -120,7 +120,6 @@ Check out the live demo at [https://lokit.netlify.app](https://lokit.netlify.app
 <img width="1820" height="904" alt="image" src="https://github.com/user-attachments/assets/dccc9ca2-3ca8-4e3f-8958-56f624f5c56a" />
 <img width="1838" height="884" alt="image" src="https://github.com/user-attachments/assets/f7ccb07e-5554-4cfe-ae98-ebd2ddcaa3be" />
 <img width="1845" height="898" alt="image" src="https://github.com/user-attachments/assets/f32019a5-c0f9-4c35-879d-a05c029df81f" />
-<img width="1845" height="898" alt="image" src="https://github.com/user-attachments/assets/299256ff-0dff-47a0-9d09-ef7081f499ee" />
 
 
 ## 🙏 Acknowledgments
